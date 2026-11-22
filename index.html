@@ -97,4 +97,98 @@
 </head>
 <body>
   <div class="container">
-    <img id="avatar" class="avatar"
+    <img id="avatar" class="avatar" src="" alt="Cloud BT" />
+    <h1 id="title"></h1>
+    <p id="subtitle" class="subtitle"></p>
+    <div id="links" class="links"></div>
+  </div>
+
+  <script>
+    // ================= НАСТРОЙКИ СТРАНИЦЫ =================
+    const PAGE = {
+      title: "Cloud BT",
+      subtitle: "Main",
+      avatar: "Main. Profile pic. Main_00000.jpg",
+      background: "Main. Background_00000.jpg",
+      links: [
+        {
+          text: "Cloud",
+          url: "https://drive.google.com/drive/folders/1--iAJBx7MvsoDe2dHcyOsT8HT1QRG0fi",
+          bg: "#0EBC5F",
+          color: "#FFFFFF"
+        },
+        {
+          text: "Telegram",
+          url: "https://t.me/cloud_cai",
+          bg: "#2FA3D9",
+          color: "#FFFFFF"
+        }
+      ]
+    };
+    // ======================================================
+
+    document.title = PAGE.title;
+    document.getElementById("title").textContent = PAGE.title;
+    document.getElementById("subtitle").textContent = PAGE.subtitle;
+
+    if (PAGE.background) {
+      document.body.style.backgroundImage = `url("${encodeURI(PAGE.background)}")`;
+    }
+
+    const avatarEl = document.getElementById("avatar");
+    if (PAGE.avatar) {
+      avatarEl.src = encodeURI(PAGE.avatar);
+      avatarEl.onerror = () => { avatarEl.style.display = "none"; };
+    } else {
+      avatarEl.style.display = "none";
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      return Promise.resolve();
+    }
+
+    const linksContainer = document.getElementById("links");
+    PAGE.links.forEach(item => {
+      const a = document.createElement("a");
+      a.className = "link-btn";
+      a.textContent = item.text;
+      a.style.backgroundColor = item.bg || "#666666";
+      a.style.color = item.color || "#FFFFFF";
+
+      if (item.copy) {
+        a.href = "#";
+        let timer;
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          copyToClipboard(item.copy).then(() => {
+            a.textContent = item.copiedText || "Copied!";
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+              a.textContent = item.text;
+            }, 2000);
+          });
+        });
+      } else {
+        a.href = item.url || "#";
+        if (item.url && item.url !== "#" && !item.sameTab) {
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+        }
+      }
+
+      linksContainer.appendChild(a);
+    });
+  </script>
+</body>
+</html>
